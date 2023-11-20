@@ -34,27 +34,15 @@ func main() {
 		return
 	}
 
-	kubectl := KubectlImpl{}
 	results := []string{}
 
 	if args[0] == "n" || args[0] == "namespace" {
-		fmt.Println("searching for namespace")
-		if(len(args) == 1){
+		if len(args) == 1 {
 			fmt.Println("No namespace search expression given")
 			return
 		}
-		clusters := kubectl.GetClusters()
-		for _, cluster := range clusters {
-			printToStatusLine("search in Cluster: " + cluster)
-			kubectl.SetCluster(cluster)
-			namespaces := kubectl.GetNamespaces(args[1])
-			if len(namespaces) > 0 {
-				for _, namespace := range namespaces {
-					message := "Namespace '" + namespace + "' found in cluster '" + cluster + "'"
-					results = append(results, message)
-				}
-			}
-		}
+		namespace := Namespace{}
+		results = namespace.find(args[1])
 	}
 
 	// print result
@@ -67,5 +55,4 @@ func main() {
 			fmt.Println(result)
 		}
 	}
-
 }
