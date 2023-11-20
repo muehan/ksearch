@@ -20,7 +20,7 @@ func (kubectl KubectlImpl) GetClusters() []string {
 	clusters := strings.Split(clusterString, "\n")
 	retval := []string{}
 	for _, cluster := range clusters {
-		if cluster != "" || !strings.Contains(cluster, "rancher") {
+		if cluster != "" && !strings.Contains(cluster, "rancher") {
 			retval = append(retval, cluster)
 		}
 	}
