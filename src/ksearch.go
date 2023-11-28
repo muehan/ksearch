@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"strings"
 )
 
 func printHelp() {
@@ -14,11 +13,8 @@ func printHelp() {
 }
 
 func printToStatusLine(message string) {
-	width := 100
-	fill := " "
-	padding := strings.Repeat(fill, width-len(message))
-	result := message + padding
-	fmt.Print("\r" + result)
+	fmt.Print("\033[G\033[K")
+	fmt.Print(message)
 }
 
 func main() {
@@ -45,6 +41,30 @@ func main() {
 		results = namespace.find(args[1])
 	}
 
+	if args[0] == "i" || args[0] == "ingress" {
+
+		if len(args) < 3 {
+			fmt.Println("No ingress search expression given")
+			fmt.Println("search 'ksearch ingress {pattern} {searchExpression} {(optional) clusterFilter}")
+			return
+		}
+
+		searchPattern := args[1]
+		searchText := args[2]
+		clusterFilter := ""
+
+		if len(args) == 4 {
+			clusterFilter = args[3]
+		}
+
+		if searchPattern == "url" {
+			ingress := Ingress{}
+			results = ingress.findByUrlV2(searchText, clusterFilter)
+		} else {
+			fmt.Println("no search pattern found, use 'url'")
+		}
+	}
+
 	// print result
 	if len(results) > 0 {
 		printToStatusLine("done")
@@ -54,5 +74,7 @@ func main() {
 		for _, result := range results {
 			fmt.Println(result)
 		}
+	} else {
+		fmt.Println("No results found")
 	}
 }
